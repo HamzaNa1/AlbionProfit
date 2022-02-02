@@ -1,4 +1,7 @@
-﻿namespace AlbionProfit
+﻿using System.Linq;
+using System.Runtime.Serialization;
+
+namespace AlbionProfit
 {
     public class Profiter
     {
@@ -32,7 +35,7 @@
 
             Console.WriteLine("Getting profit...");
             List<Profit> profits = new List<Profit>();
-            for (int i = 4; i < 9; i++)
+            for (int i = Settings.Current.MinTier; i < Settings.Current.MaxTier + 1; i++)
             {
                 for (int j = 0; j < 4; j++)
                 {
@@ -48,24 +51,69 @@
             }
 
             List<Profit> orderedProfits = profits.OrderByDescending(x => x.SellPrice - x.BuyPrice).ToList();
-            
-            string display = Displayer.GetDisplay(new[] { "Item", "City to buy at", "Buy for", "City to sell at", "Sell for", "Profit" },
-                new[]
-                {
-                    orderedProfits.Select(x => x.Item.ToString()).ToArray(),
-                    orderedProfits.Select(x => x.BuyCity.ToString()).ToArray(),
-                    orderedProfits.Select(x => x.BuyPrice.ToString()).ToArray(),
-                    orderedProfits.Select(x => x.SellCity.ToString()).ToArray(),
-                    orderedProfits.Select(x => x.SellPrice.ToString()).ToArray(),
-                    orderedProfits.Select(x =>
+            DisplayProfit(orderedProfits);
+        }
+
+        private void DisplayProfit(IReadOnlyCollection<Profit> profits)
+        {
+            bool plan = false;
+            int number = 0;
+
+            do
+            {
+                string display = !plan? Displayer.GetDisplay(
+                    new[] { "N", "Item", "City to buy at", "Buy for", "City to sell at", "Sell for", "Profit" },
+                    new[]
                     {
-                        int profit = x.SellPrice - x.BuyPrice;
-                        return (profit > 0 ? "+" : "") + profit;
-                    }).ToArray()
-                });
-            
-            Console.Clear();
-            ExtraConsole.WriteLine(display);
+                        Enumerable.Range(1, profits.Count).Select(x => x.ToString()).ToArray(),
+                        profits.Select(x => x.Item.ToString()).ToArray(),
+                        profits.Select(x => x.BuyCity.ToString()).ToArray(),
+                        profits.Select(x => x.BuyPrice.ToString()).ToArray(),
+                        profits.Select(x => x.SellCity.ToString()).ToArray(),
+                        profits.Select(x => x.SellPrice.ToString()).ToArray(),
+                        profits.Select(x =>
+                        {
+                            int profit = x.SellPrice - x.BuyPrice;
+                            return (profit > 0 ? "+" : "") + profit;
+                        }).ToArray()
+                    }) :
+                        $"Plan for {profits.ElementAt(number - 1).Item}\n" + Displayer.GetDisplay(new [] {"Item", "Quantity"}, new []
+                        {
+                            profits.ElementAt(number - 1).NeededItems.Select(x => x.item.ToString()).ToArray(),
+                            profits.ElementAt(number - 1).NeededItems.Select(x => x.amount.ToString()).ToArray()
+                        });
+
+                Console.Clear();
+                ExtraConsole.WriteLine(display);
+                Console.WriteLine(plan
+                    ? "Press any key to go back..."
+                    : "Type the number of the resource to get the plan or (esc) to go back...");
+                if (plan)
+                {
+                    Console.ReadKey();
+                    plan = false;
+                }
+                else
+                {
+                    string? command = Console.ReadLine();
+
+                    if (command is not null)
+                    {
+                        if (command == "esc")
+                        {
+                            break;
+                        }
+                        else if (int.TryParse(command, out number))
+                        {
+                            if (number > 0 && number <= profits.Count)
+                            {
+                                plan = true;
+                            }
+                        }
+                    }
+                }
+
+            } while (true);
         }
     }
 }

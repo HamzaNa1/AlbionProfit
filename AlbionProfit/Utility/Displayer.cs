@@ -113,4 +113,62 @@ public static class Displayer
 
         return sb.ToString();
     }
+    
+    public static void SettingsMenu()
+    {
+        int index = 0;
+        bool escape = false;
+
+        while (true)
+        {
+            Console.Clear();
+            for (int i = 0; i < 4; i++)
+            {
+                ExtraConsole.WriteLine((index == i ? "<f=green>" : "<f=gray>") + Settings.GetSetting(i));
+            }
+            ExtraConsole.Write("<f=gray>");
+            Console.WriteLine("Use the up and down arrows to move and the left and right arrows to change the values");
+            Console.WriteLine("Press escape to go back...");
+
+            ConsoleKeyInfo key = Console.ReadKey();
+            switch (key.Key)
+            {
+                case ConsoleKey.UpArrow:
+                {
+                    index--;
+                    if (index < 0)
+                    {
+                        index = 3;
+                    }
+
+                    break;
+                }
+                case ConsoleKey.DownArrow:
+                {
+                    index++;
+                    if (index >= 4)
+                    {
+                        index = 0;
+                    }
+
+                    break;
+                }
+                case ConsoleKey.RightArrow:
+                    Settings.ChangeSetting(index, 1);
+                    break;
+                case ConsoleKey.LeftArrow:
+                    Settings.ChangeSetting(index, -1);
+                    break;
+                case ConsoleKey.Escape:
+                    escape = true;
+                    break;
+            }
+
+            if (escape)
+            {
+                break;
+            }
+        }
+    }
+
 }

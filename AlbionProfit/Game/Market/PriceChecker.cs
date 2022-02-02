@@ -10,16 +10,14 @@ public static class PriceChecker
 
     private static readonly HttpClient Client = new HttpClient();
 
-    public static async Task<Price[]> Check(Item item)
+    public static async Task<Price[]> Check(Item item, bool buyOrder = false)
     {
         string response = await Client.GetStringAsync(PricePathPrefix + item.NameId + PricePathSuffix);
         ItemPriceJsonObject[] itemPrices = JsonConvert.DeserializeObject<ItemPriceJsonObject[]>(response);
 
         List<Price> prices = new List<Price>();
-        for(int i = 0; i < itemPrices.Length; i++)
+        foreach (ItemPriceJsonObject currentPrice in itemPrices)
         {
-            ItemPriceJsonObject currentPrice = itemPrices[i];
-
             if (currentPrice.BuyPriceMinDate == DateTime.Parse("0001-01-01T00:00:00"))
             {
                 continue;
@@ -41,7 +39,7 @@ public static class PriceChecker
             {
                 continue;
             }
-            int sellPrice = currentPrice.SellPriceMin;
+            int sellPrice = buyOrder ? currentPrice.BuyPriceMax : currentPrice.SellPriceMin;
 
             prices.Add( new Price(item, city, quality, sellPrice));
         }
