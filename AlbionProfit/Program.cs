@@ -1,5 +1,6 @@
 ﻿using AlbionProfit;
 
+Console.Clear();
 Settings.LoadSettings();
 
 Profiter profiter = new Profiter();

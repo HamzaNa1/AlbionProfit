@@ -127,8 +127,8 @@ public static class Displayer
                 ExtraConsole.WriteLine((index == i ? "<f=green>" : "<f=gray>") + Settings.GetSetting(i));
             }
             ExtraConsole.Write("<f=gray>");
-            Console.WriteLine("Use the up and down arrows to move and the left and right arrows to change the values");
-            Console.WriteLine("Press escape to go back...");
+            ExtraConsole.WriteLine("<f=red>Use the up and down arrows to move and the left and right arrows to change the values");
+            ExtraConsole.WriteLine("<f=red>Press escape to go back...");
 
             ConsoleKeyInfo key = Console.ReadKey();
             switch (key.Key)
