@@ -124,7 +124,7 @@ public static class Displayer
         {
             Console.Clear();
             sb.Clear();            
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < Settings.Amount; i++)
             {
                 if (index == i)
                 {
@@ -153,7 +153,7 @@ public static class Displayer
                     index--;
                     if (index < 0)
                     {
-                        index = 3;
+                        index = Settings.Amount - 1;
                     }
 
                     break;
@@ -161,7 +161,7 @@ public static class Displayer
                 case ConsoleKey.DownArrow:
                 {
                     index++;
-                    if (index >= 4)
+                    if (index >= Settings.Amount)
                     {
                         index = 0;
                     }
@@ -185,5 +185,18 @@ public static class Displayer
             }
         }
     }
+    
+    public static float GetValue(string message)
+    {
+        float value = 0;
+        string? input;
+        do
+        {
+            Console.Clear();
+            Console.Write(message);
+            input = Console.ReadLine();
+        } while (input is null || !float.TryParse(input, out value));
 
+        return value;
+    }
 }

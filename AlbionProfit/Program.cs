@@ -8,9 +8,8 @@ Settings.LoadSettings();
 Profiter profiter = new Profiter();
 await profiter.Initialize();
 
-VersionChecker checker = new VersionChecker();
-string? currentVersion = checker.GetCurrentVersion();
-string apiVersion = await checker.GetVersionFromApi();
+string? currentVersion = VersionChecker.GetCurrentVersion();
+string apiVersion = await VersionChecker.GetVersionFromApi();
 bool isUpToDate = currentVersion == apiVersion;
 
 while (true)

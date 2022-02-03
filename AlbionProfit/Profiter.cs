@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Runtime.Serialization;
+﻿using System.Globalization;
 using AlbionProfit.Game.Items;
 using AlbionProfit.Game.Market;
 using AlbionProfit.Utility;
@@ -9,16 +8,10 @@ namespace AlbionProfit
     public class Profiter
     {
         private readonly ItemsRepository _repository;
-        private readonly SearchSettings _settings;
 
         public Profiter()
         {
             _repository = new ItemsRepository();
-        }
-
-        public Profiter(SearchSettings settings)
-        {
-            _settings = settings;
         }
 
         public async Task Initialize()
@@ -57,7 +50,7 @@ namespace AlbionProfit
             DisplayProfit(orderedProfits);
         }
 
-        private void DisplayProfit(IReadOnlyCollection<Profit> profits)
+        private static void DisplayProfit(IReadOnlyCollection<Profit> profits)
         {
             bool plan = false;
             int number = 0;
@@ -71,19 +64,19 @@ namespace AlbionProfit
                         Enumerable.Range(1, profits.Count).Select(x => x.ToString()).ToArray(),
                         profits.Select(x => x.Item.ToString()).ToArray(),
                         profits.Select(x => x.BuyCity.ToString()).ToArray(),
-                        profits.Select(x => x.BuyPrice.ToString()).ToArray(),
+                        profits.Select(x => x.BuyPrice.ToString("0.00")).ToArray(),
                         profits.Select(x => x.SellCity.ToString()).ToArray(),
-                        profits.Select(x => x.SellPrice.ToString()).ToArray(),
+                        profits.Select(x => x.SellPrice.ToString("0.00")).ToArray(),
                         profits.Select(x =>
                         {
-                            int profit = x.SellPrice - x.BuyPrice;
-                            return (profit > 0 ? "+" : "") + profit;
+                            float profit = x.SellPrice - x.BuyPrice;
+                            return (profit > 0 ? "+" : "") + profit.ToString("0.00");
                         }).ToArray()
                     }) :
-                        $"Plan for {profits.ElementAt(number - 1).Item}\n" + Displayer.GetDisplay(new [] {"Item", "Quantity"}, new []
+                        $"Plan for {profits.ElementAt(number - 1).Item}\nCrafting Fee:{profits.ElementAt(number - 1).fee}\n" + Displayer.GetDisplay(new [] {"Item", "Quantity"}, new []
                         {
                             profits.ElementAt(number - 1).NeededItems.Select(x => x.item.ToString()).ToArray(),
-                            profits.ElementAt(number - 1).NeededItems.Select(x => x.amount.ToString()).ToArray()
+                            profits.ElementAt(number - 1).NeededItems.Select(x => x.amount.ToString("0.00")).ToArray()
                         });
 
                 Console.Clear();

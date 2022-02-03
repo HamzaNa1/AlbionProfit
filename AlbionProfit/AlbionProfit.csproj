@@ -8,8 +8,8 @@
         <PackAsTool>true</PackAsTool>
         <ToolCommandName>albionprofit</ToolCommandName>
         <PackageOutputPath>./nupkg</PackageOutputPath>
-        <PackageVersion>1.1.0</PackageVersion>
-        <Version>1.1.0</Version>
+        <PackageVersion>1.2.0</PackageVersion>
+        <Version>1.2.0</Version>
         <Authors>HamzaNa1</Authors>
         <Title>AlbionProfit</Title>
         <Description>A tool to help you make silver while refining in Albion Online</Description>

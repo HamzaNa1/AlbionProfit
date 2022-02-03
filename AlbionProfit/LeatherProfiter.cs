@@ -44,6 +44,11 @@ public class LeatherProfiter
             }
 
             Price[] prices = task.Result;
+            if (prices.Length == 0)
+            {
+                continue;
+            }
+            
             _leathers.Add(prices[0].Item.Attributes, (prices[0].Item, prices));
         }
     }
@@ -55,11 +60,12 @@ public class LeatherProfiter
             throw new Exception("Invalid attributes.");
         }
 
-        List<(Item item, int amount, bool isRefined)> neededItems = GetDirectNeededItems(attributes);
+        (List<(Item item, float amount, bool isRefined)> neededItems, int totalFee) = GetDirectNeededItems(attributes);
 
-        int lowestPrice = int.MaxValue;
+        float lowestPrice = float.MaxValue;
         City lowestCity = City.Null;
-        List<(Item item, int amount)> lowestItems = new List<(Item item, int amount)>();
+        int lowestFee = 0;
+        List<(Item item, float amount)> lowestItems = new List<(Item item, float amount)>();
 
         while (true)
         {
@@ -69,8 +75,8 @@ public class LeatherProfiter
                     continue;
 
                 bool itemsExist = true;
-                int price = 0;
-                foreach ((Item item, int amount, bool isRefined) in neededItems)
+                float price = 0;
+                foreach ((Item item, float amount, bool isRefined) in neededItems)
                 {
                     Price itemPrice = isRefined
                         ? GetLeatherPriceInCity(item.Attributes, city)
@@ -85,43 +91,45 @@ public class LeatherProfiter
                     price += itemPrice.SellPrice * amount;
                 }
 
+                price += totalFee;
+
                 if (!itemsExist)
                 {
                     continue;
                 }
 
-                int average = price / neededItems.Count;
-                if (average < lowestPrice)
+                if (price < lowestPrice)
                 {
-                    lowestPrice = average;
+                    lowestPrice = price;
                     lowestCity = city;
+                    lowestFee = totalFee;
                     lowestItems = neededItems.Select(x => (x.item, x.amount)).ToList();
                 }
             }
 
-            bool brk = true;
-            foreach ((Item item, int amount, bool isRefined) neededItem in neededItems.ToList())
-            {
-                if (neededItem.isRefined)
-                {
-                    neededItems.Remove(neededItem);
-                    neededItems.AddRange(GetDirectNeededItems(neededItem.item.Attributes));
-                    brk = false;
-                }
-            }
-
-            if (brk)
+            List<(Item item, float amount, bool isRefined)> refinedNeededItems = neededItems.Where(neededItem => neededItem.isRefined).ToList();
+            
+            if (!refinedNeededItems.Any())
             {
                 break;
+            }
+            
+            foreach ((Item item, float amount, bool isRefined) neededItem in refinedNeededItems)
+            {
+                (List<(Item item, float amount, bool isRefined)> items, int craftingFee) = GetDirectNeededItems(neededItem.item.Attributes);
+                totalFee += craftingFee;
+                
+                neededItems.Remove(neededItem);
+                neededItems.AddRange(items);
             }
         }
 
         if (lowestCity == City.Null)
         {
             throw new Exception("Couldn't find lowest price.");
-        }
+        } 
         
-        int highestPrice = int.MinValue;
+        float highestPrice = float.MinValue;
         City highestCity = City.Null;
         
         foreach (City city in Enum.GetValues(typeof(City)))
@@ -132,13 +140,14 @@ public class LeatherProfiter
             Price itemPrice = GetLeatherPriceInCity(attributes, city);
             if(itemPrice.City == City.Null)
                 continue;
-            
-            int price = itemPrice.SellPrice;
 
-            int average = price / neededItems.Count;
-            if (average > highestPrice)
+            float tax = Settings.Current.HasPremium ? 0.045f : 0.075f;
+            
+            float price = itemPrice.SellPrice - itemPrice.SellPrice * tax;
+
+            if (price > highestPrice)
             {
-                highestPrice = average;
+                highestPrice = price;
                 highestCity = city;
             }
         }
@@ -148,7 +157,7 @@ public class LeatherProfiter
             throw new Exception("Couldn't find highest price.");
         }
 
-        return new Profit(_leathers[attributes].item, lowestPrice, lowestCity, highestPrice, highestCity, lowestItems);
+        return new Profit(_leathers[attributes].item, lowestPrice, lowestCity, highestPrice,  highestCity, lowestFee, lowestItems);
     }
 
     private Price GetHidePriceInCity(Attributes attributes, City city)
@@ -161,9 +170,9 @@ public class LeatherProfiter
         return _leathers[attributes].prices.FirstOrDefault(x => x.City == city);
     }
 
-    private List<(Item item, int amount)> GetNeededItems(Attributes attributes)
+    private List<(Item item, float amount)> GetNeededItems(Attributes attributes)
     {
-        List<(Item item, int amount)> neededItems = new List<(Item item, int amount)>();
+        List<(Item item, float amount)> neededItems = new List<(Item item, float amount)>();
 
         switch (attributes.Tier)
         {
@@ -195,13 +204,19 @@ public class LeatherProfiter
                 break;
         }
 
+        for (int i = 0; i < neededItems.Count; i++)
+        {
+            neededItems[i] = (neededItems[i].item, neededItems[i].amount - neededItems[i].amount * Settings.Current.ReturnRate / 100f);
+        }
+
         return neededItems;
     }
     
-    private List<(Item item, int amount, bool isRefined)> GetDirectNeededItems(Attributes attributes)
+    private (List<(Item item, float amount, bool isRefined)> items, int fee) GetDirectNeededItems(Attributes attributes)
     {
-        List<(Item item, int amount, bool isRefined)> neededItems = new List<(Item item, int amount, bool isRefined)>();
-
+        List<(Item item, float amount, bool isRefined)> neededItems = new List<(Item item, float amount, bool isRefined)>();
+        int fee = (int)MathF.Round(MathF.Pow(2, attributes.Tier - 3 + attributes.Enchantment) * 8 * 0.1125f * (Settings.Current.UsageFee / 100f));
+        
         switch (attributes.Tier)
         {
             case >= 5:
@@ -231,7 +246,12 @@ public class LeatherProfiter
                 neededItems.Add((_hides[new Attributes(2, 0)].item, 1, false));
                 break;
         }
+        
+        for (int i = 0; i < neededItems.Count; i++)
+        {
+             neededItems[i] = (neededItems[i].item, neededItems[i].amount - neededItems[i].amount * Settings.Current.ReturnRate / 100f, neededItems[i].isRefined);
+        }
 
-        return neededItems;
+        return (neededItems, fee);
     }
 }

@@ -2,4 +2,4 @@
 
 namespace AlbionProfit.Game.Market;
 
-public readonly record struct Profit(Item Item, int BuyPrice, City BuyCity, int SellPrice, City SellCity, List<(Item item, int amount)> NeededItems);
+public readonly record struct Profit(Item Item, float BuyPrice, City BuyCity, float SellPrice, City SellCity, int fee, List<(Item item, float amount)> NeededItems);
