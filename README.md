@@ -7,6 +7,3 @@ A tool to help you make silver while refining in Albion Online
 2. Run the command (dotnet tool install --global AlbionProfit) in cmd
 3. Run the command (albionprofit) in cmd
 4. Enjoy!
-
-## IMPORTANT
-Calculations do not include market tax or return rate
