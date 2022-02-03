@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace AlbionProfit;
+namespace AlbionProfit.Utility;
 
 public static class ExtraConsole
 {

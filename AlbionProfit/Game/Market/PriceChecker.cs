@@ -1,7 +1,7 @@
-﻿using System.Globalization;
+﻿using AlbionProfit.Game.Items;
 using Newtonsoft.Json;
 
-namespace AlbionProfit;
+namespace AlbionProfit.Game.Market;
 
 public static class PriceChecker
 {

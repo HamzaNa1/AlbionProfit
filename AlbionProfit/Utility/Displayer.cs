@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace AlbionProfit;
+namespace AlbionProfit.Utility;
 
 public static class Displayer
 {
@@ -118,17 +118,32 @@ public static class Displayer
     {
         int index = 0;
         bool escape = false;
-
+        
+        StringBuilder sb = new StringBuilder();
         while (true)
         {
             Console.Clear();
+            sb.Clear();            
             for (int i = 0; i < 4; i++)
             {
-                ExtraConsole.WriteLine((index == i ? "<f=green>" : "<f=gray>") + Settings.GetSetting(i));
+                if (index == i)
+                {
+                    sb.Append("<f=green>");
+                    sb.Append(Settings.GetSetting(i));
+                    sb.Append(" >");
+                }
+                else
+                {
+                    sb.Append("<f=gray>");
+                    sb.Append(Settings.GetSetting(i));
+                }
+
+                sb.AppendLine();
             }
-            ExtraConsole.Write("<f=gray>");
-            ExtraConsole.WriteLine("<f=red>Use the up and down arrows to move and the left and right arrows to change the values");
-            ExtraConsole.WriteLine("<f=red>Press escape to go back...");
+            sb.Append("<f=gray>");
+            sb.AppendLine("<f=red>Use the up and down arrows to move and the left and right arrows to change the values");
+            sb.AppendLine("<f=red>Press escape to go back...");
+            ExtraConsole.Write(sb.ToString());
 
             ConsoleKeyInfo key = Console.ReadKey();
             switch (key.Key)

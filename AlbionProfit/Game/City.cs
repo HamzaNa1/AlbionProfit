@@ -1,4 +1,4 @@
-﻿namespace AlbionProfit;
+﻿namespace AlbionProfit.Game;
 
 public enum City
 {

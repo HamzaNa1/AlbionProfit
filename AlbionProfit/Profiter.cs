@@ -1,5 +1,8 @@
 ﻿using System.Linq;
 using System.Runtime.Serialization;
+using AlbionProfit.Game.Items;
+using AlbionProfit.Game.Market;
+using AlbionProfit.Utility;
 
 namespace AlbionProfit
 {

@@ -1,6 +1,4 @@
-﻿using System.Net.Http.Headers;
-
-namespace AlbionProfit;
+﻿namespace AlbionProfit.Utility;
 
 public class Settings
 {

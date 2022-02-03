@@ -1,4 +1,4 @@
-﻿namespace AlbionProfit
+﻿namespace AlbionProfit.Game.Market
 {
     public readonly struct SearchKey
     {

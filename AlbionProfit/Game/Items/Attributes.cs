@@ -1,4 +1,4 @@
-﻿namespace AlbionProfit;
+﻿namespace AlbionProfit.Game.Items;
 
 public readonly struct Attributes
 {

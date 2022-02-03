@@ -1,6 +1,7 @@
 ﻿using System.Text;
+using AlbionProfit.Game.Market;
 
-namespace AlbionProfit
+namespace AlbionProfit.Game.Items
 {
     public class ItemsRepository
     {

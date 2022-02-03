@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace AlbionProfit
+namespace AlbionProfit.Game.Items
 {
     public readonly struct Item
     {

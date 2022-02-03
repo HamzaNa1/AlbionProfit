@@ -1,4 +1,4 @@
-﻿namespace AlbionProfit;
+﻿namespace AlbionProfit.Game.Items;
 
 public enum Quality
 {

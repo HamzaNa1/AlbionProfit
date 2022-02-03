@@ -1,4 +1,9 @@
-﻿namespace AlbionProfit;
+﻿using AlbionProfit.Game;
+using AlbionProfit.Game.Items;
+using AlbionProfit.Game.Market;
+using AlbionProfit.Utility;
+
+namespace AlbionProfit;
 
 public class LeatherProfiter
 {
@@ -22,6 +27,11 @@ public class LeatherProfiter
             }
 
             Price[] prices = task.Result;
+            if (prices.Length == 0)
+            {
+                continue;
+            }
+
             _hides.Add(prices[0].Item.Attributes, (prices[0].Item, prices));
         }
 

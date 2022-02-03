@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-namespace AlbionProfit;
+﻿namespace AlbionProfit.Game.Items;
 
 public static class CommonItems
 {
