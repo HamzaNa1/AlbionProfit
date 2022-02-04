@@ -1,5 +1,7 @@
 # AlbionProfit
- 
+
+<img src=https://img.shields.io/nuget/v/AlbionProfit/>
+
 A tool to help you make silver while refining in Albion Online
 
 ## How to Install
