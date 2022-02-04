@@ -1,6 +1,6 @@
 # AlbionProfit
 
-![Nuget](https://img.shields.io/nuget/v/AlbionProfit?logo=nuget)
+<a href="https://www.nuget.org/packages/AlbionProfit/" rel="">![Nuget](https://img.shields.io/nuget/v/AlbionProfit?logo=nuget)</a>
 
 A tool to help you make silver while refining in Albion Online
 
